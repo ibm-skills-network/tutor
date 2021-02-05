@@ -31,22 +31,15 @@ RUN gem install bundler -v $BUNDLER_VERSION
 RUN gem install rake -v $RAKE_VERSION
 
 # Install forum
-RUN git clone https://github.com/edx/cs_comments_service.git --branch {{ OPENEDX_COMMON_VERSION }} --depth 1 /openedx/cs_comments_service
+RUN git clone https://github.com/edx/cs_comments_service.git --branch master --depth 1 /openedx/cs_comments_service
 WORKDIR /openedx/cs_comments_service
 RUN bundle install --deployment
 
 COPY ./bin /openedx/bin
 RUN chmod a+x /openedx/bin/*
 ENV PATH /openedx/bin:${PATH}
-ENTRYPOINT ["docker-entrypoint.sh"]
 
 ENV SINATRA_ENV staging
 ENV NEW_RELIC_ENABLE false
-ENV API_KEY forumapikey
-ENV SEARCH_SERVER "http://elasticsearch:9200"
-ENV MONGODB_AUTH ""
-ENV MONGOID_AUTH_MECH ""
-ENV MONGODB_HOST "mongodb"
-ENV MONGODB_PORT "27017"
 EXPOSE 4567
 CMD ./bin/unicorn -c config/unicorn_tcp.rb -I '.'
